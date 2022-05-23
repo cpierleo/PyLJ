@@ -1,5 +1,5 @@
 from numba import jit
-from numpy import  zeros, rint
+from numpy import  zeros, rint, cos, sin, ones, pi
 
 @jit(nopython=True,cache=True)
 def enforces(rx, ry, rz, L, N):
@@ -120,7 +120,7 @@ def energymove(rx, ry, rz, L, N, rxt, ryt, rzt, nt ):
             vitd-= vir6
             vita+= 2.*vir6*rr6
     return (entd-ened,enta-enea,vitd-vird,vita-vira)
-    
+
 @jit(nopython=True,cache=True)
 def energyadd(rx, ry, rz, L, N, rxt, ryt, rzt ):
     c6 = 4.0
@@ -190,3 +190,48 @@ def energydel(rx, ry, rz, L, N, nt):
             vird-= vir6
             vira+= 2.*vir6*rr6
     return (ened,enea,vird,vira)
+
+
+# +
+@jit(nopython=True,cache=True)
+def calcsofk(rx, ry, rz, nmax, N):
+    cp = zeros((3,2*npmax+1,N))
+    sp = zeros((3,2*npmax+1,N))
+    cp[,nmax,] = 1.0     # this is the k=0 vector
+# these are the contribution of the first k-vector (1,0,0) and symmetries.
+    cp[1,nmax+1,] = cos(2*pi*rx)
+    cp[2,nmax+1,] = cos(2*pi*ry)
+    cp[3,nmax+1,] = cos(2*pi*rz)
+    sp[1,nmax+1,] = sin(2*pi*rx)
+    sp[2,nmax+1,] = sin(2*pi*ry)
+    sp[3,nmax+1,] = sin(2*pi*rz)
+#
+    for n in range(nmax-1):
+        m=nmax+1+n
+        cp[,m,] = cp[,nmax+1,]*cp[,m-1,]-sp[,nmax+1,]*sp[,m-1,]
+        sp[,m,] = sp[,nmax+1,]*cp[,m-1,]+cp[,nmax+1,]*sp[,m-1,]
+    for n in range(1,nmax+1):
+        mm = nmax-n
+        mp = nmax+n
+#        print(mp,mm)
+# impose the symmetry of cos and sin along the axes
+        cp[,mm,] = cp[,mp,]
+        sp[,mm,] = -sp[,mp,]
+        
+# these are the sum of cos and sin over particles.
+# indices are along the three directions (nx, ny, nz)
+    csum = zeros((2*nmax+1,2*nmax+1,2*nmax+1), dtype=float)
+    ssum = zeros((2*nmax+1,2*nmax+1,2*nmax+1), dtype=float)
+    for k in range(N):
+        for nx in range(2*nmax+1):
+            for ny in range(2*nmax+1):
+                for nz in range(2*nmax+1):
+                    csum[nx,ny,nz] += cp[1,nx,k]*cp[2,ny,k]*cp[3,n3,k] - cp[1,nx,k]*sp[2,ny,k]*sp[3,nz,k]
+                                    - sp[1,nx,k]*sp[2,ny,k]*cp[3,nz,k] - sp[1,nx,k]*cp[2,ny,k]*sp[3,nz,k]
+                    ssum[nx,ny,nz] += sp[1,nx,k]*cp[2,ny,k]*cp[3,n3,k] - sp[1,nx,k]*sp[2,ny,k]*sp[3,nz,k]
+                                    - cp[1,nx,k]*sp[2,ny,k]*cp[3,nz,k] + cp[1,nx,k]*cp[2,ny,k]*cp[3,n3,k]
+
+    sofk = zeros((2*nmax+1,2*nmax+1,2*nmax+1), dtype=float)
+    sofk = (csum**2+ssum**2)/N
+    return(sofk)
+
