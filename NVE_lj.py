@@ -17,6 +17,7 @@ def mdlj(nstep=1000, rho=0.84, m=6, kt=0.694, dt=0.005, freq=1, mode=0):
     """
     from numpy import random, sqrt, sum
     from PyLJ import LJ
+    from calcener import calcsofk
 #
     a=(4/rho)**(1./3.)
     Lref=a*m
