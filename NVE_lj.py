@@ -28,8 +28,8 @@ def mdlj(nstep=1000, rho=0.84, m=6, kt=0.694, dt=0.005, freq=1, mode=0):
     print( "# integration time step dt =%8.4f" % dt )
     print( "# number of time steps for this run ns =%d" % nstep )
     print( "# reference side of the cubic MD-box L(0) = %8.4f " % Lref )
-    print( "# number of particles  N =%d" % N )
-    print( "# density rho =%8.4f"  % rho )
+    print( "# number of particles N =%d" % N )
+    print( "# density rho =%8.4f" % rho )
     if mode :
     # number of particles read from file (N=4*m**3)
         fpart=open('N.out','r')     
@@ -39,6 +39,7 @@ def mdlj(nstep=1000, rho=0.84, m=6, kt=0.694, dt=0.005, freq=1, mode=0):
     else :
     # initial positions mode=0 from hexagonal lattice
         md.fcc(m)
+        sofk = calcsofk(md.rx,md.ry,md.rz,5,N)
         # initial velocities: realization of random gaussian process with zero mean 
         # so that initial momentum is exactly zero at the initial time 
         # this results in a stationary center of mass for the N particle system 
@@ -55,9 +56,9 @@ def mdlj(nstep=1000, rho=0.84, m=6, kt=0.694, dt=0.005, freq=1, mode=0):
         vcmx  = sum(md.px)
         vcmy  = sum(md.py)
         vcmz  = sum(md.pz)
-        md.px   -= vcmx/N
-        md.py   -= vcmy/N
-        md.pz   -= vcmz/N
+        md.px -= vcmx/N
+        md.py -= vcmy/N
+        md.pz -= vcmz/N
     # reduced coordinates !
         md.px *= md.L
         md.py *= md.L
