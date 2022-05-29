@@ -134,7 +134,7 @@ class LJ :
         if (pas+1)%freq==0 : 
            # compute g(R)
            self.calcgdr( N)
-           sofk = calcsofk(self.rx,self.ry,self.rz,5,N)
+           # sofk = calcsofk(self.rx,self.ry,self.rz,5,N)
            # save configuration for VMD in xyz format
            self.writexyz(N)
            print (" %8.3f %9.4g %9.4g %9.4g %10.7f %7.2e %7.2e %7.2e" % (self.t, enep/N, enek/N, virp, enep+enek, vcmx, vcmy,vcmz) )

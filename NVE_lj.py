@@ -17,7 +17,6 @@ def mdlj(nstep=1000, rho=0.84, m=6, kt=0.694, dt=0.005, freq=1, mode=0):
     """
     from numpy import random, sqrt, sum
     from PyLJ import LJ
-    from calcener import calcsofk
 #
     a=(4/rho)**(1./3.)
     Lref=a*m
@@ -40,7 +39,7 @@ def mdlj(nstep=1000, rho=0.84, m=6, kt=0.694, dt=0.005, freq=1, mode=0):
     else :
     # initial positions mode=0 from hexagonal lattice
         md.fcc(m)
-        sofk = calcsofk(md.rx,md.ry,md.rz,5,N)
+#        sofk = calcsofk(md.rx,md.ry,md.rz,5,N)
         # initial velocities: realization of random gaussian process with zero mean 
         # so that initial momentum is exactly zero at the initial time 
         # this results in a stationary center of mass for the N particle system 
