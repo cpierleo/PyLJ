@@ -86,10 +86,10 @@ class LJ :
     vcmx = sum(self.px[:N])
     vcmy = sum(self.py[:N])
     vcmz = sum(self.pz[:N])
-    data = 'NVE_data.out'
-    out_data = open(data, 'w+')
     print( "   'time'    'enep'    'enek'  'vir_p'   'enet'        'vcmx'   'vcmy'   'vcmz'")
     print (" %8.3f %9.4g %9.4g %9.4g %10.7f %7.2e %7.2e %7.2e" % (self.t, enep/N, enek/N, virp, enep+enek, vcmx, vcmy,vcmz) )
+    data = 'NVE_data.out'
+    out_data = open(data, 'w+')
     out_data.write("   'time'    'enep'    'enek'  'vir_p'   'enet'        'vcmx'   'vcmy'   'vcmz'\n")
     out_data.write(" %8.3f %9.4g %9.4g %9.4g %10.7f %7.2e %7.2e %7.2e\n" % (self.t, enep/N, enek/N, virp, enep+enek, vcmx, vcmy,vcmz) )
     for pas in range(nstep) :
@@ -361,9 +361,13 @@ class LJ :
     epa,epd,vira,vird,self.fax,self.fdx,self.fay,self.fdy,self.faz,self.fdz = enforces(self.rx,self.ry,self.rz,self.L,N)
     enep = epa/self.L**12 + epd/self.L**6
     virp = vira/self.L**12 + vird/self.L**6
+    acc = 0.
     print("# initial values enep = %8.3f virial = %8.3f " % (enep,virp) )
     print( "     'pas'    'enep'  'virial'   'acc' ")
-    acc = 0.
+    data = 'MC_NVT_data.out'
+    out_data = open(data, 'w+')
+    out_data.write("   'pas'    'enep'  'virial'   'acc' \n")
+    out_data.write(" %8d %9.4f %9.4f  %6.2f \n" % (self.t, enep/N, virp/N, acc ) )
     for pas in range(nstep) :
         self.t   += 1
         # advance one step with one move per particle (on average)
@@ -399,6 +403,7 @@ class LJ :
         if (pas+1)%freq==0 : 
            self.calcgdr( N )
            print(" %8d %9.4f %9.4f  %6.2f " % (self.t, enep/N, virp/N, acc*100./(self.t*N)) )
+           out_data.write(" %8d %9.4f %9.4f  %6.2f \n" % (self.t, enep/N, virp/N, acc*100./(self.t*N)) )
            tt += 1
         # end of mc run   
     # final configuration
@@ -422,6 +427,10 @@ class LJ :
     Navg = 0
     Nhist=zeros(nstep, dtype=int32)
     acc = 0.
+    data = 'GCMC_data.out'
+    out_data = open(data, 'w+')
+    out_data.write("   'pas'   'N    'enep'  'virial'   'acc' \n")
+    out_data.write(" %8d  %5d %9.4f %9.4f  %6.2f \n" % (self.t, N, enep/N, virp/N, acc ) )
     for pas in range(nstep) :
         self.t   += 1
         randomchoice = random.random_integers(3, size=(self.Ngc))
@@ -494,6 +503,7 @@ class LJ :
         if (pas+1)%freq==0 : 
             self.calcgdr( N )
             print(" %8d  %5d %9.4f %9.4f  %6.2f" % (self.t, N, enep/N, virp/N, acc*100./(self.t*self.Ngc)) )
+            out_data.write(" %8d  %5d %9.4f %9.4f  %6.2f \n" % (self.t, N, enep/N, virp/N, acc*100./(self.t*self.Ngc) ) )
             tt += 1
         # end of gc run
     # final configuration
@@ -571,7 +581,7 @@ class LJ :
                  self.rx[j] = xi + a*nx + rrx[j]
                  self.ry[j] = yi + a*ny + rry[j]             
                  self.rz[j] = zi + a*nz + rrz[j]
-                 print( "  %d   %8.3f   %8.3f   %8.3f " % (j, self.rx[j], self.ry[j], self.rz[j]) )
+                 #print( "  %d   %8.3f   %8.3f   %8.3f " % (j, self.rx[j], self.ry[j], self.rz[j]) )
                  # reduced box coordinates in [-0.5:0.5]^3
                  self.rx[j]/= self.L
                  self.ry[j]/= self.L
@@ -580,7 +590,7 @@ class LJ :
                  self.rx[j] = xi + a*nx + rrx[j] + 0.5*a
                  self.ry[j] = yi + a*ny + rry[j] + 0.5*a     
                  self.rz[j] = zi + a*nz + rrz[j]
-                 print( "  %d   %8.3f   %8.3f   %8.3f " % (j, self.rx[j], self.ry[j], self.rz[j]) )
+                 #print( "  %d   %8.3f   %8.3f   %8.3f " % (j, self.rx[j], self.ry[j], self.rz[j]) )
                  # reduced box coordinates in [-0.5:0.5]^3
                  self.rx[j]/= self.L
                  self.ry[j]/= self.L
@@ -589,7 +599,7 @@ class LJ :
                  self.rx[j] = xi + a*nx + rrx[j] + 0.5*a
                  self.ry[j] = yi + a*ny + rry[j]             
                  self.rz[j] = zi + a*nz + rrz[j] + 0.5*a
-                 print( "  %d   %8.3f   %8.3f   %8.3f " % (j, self.rx[j], self.ry[j], self.rz[j]) )
+                 #print( "  %d   %8.3f   %8.3f   %8.3f " % (j, self.rx[j], self.ry[j], self.rz[j]) )
                  # reduced box coordinates in [-0.5:0.5]^3
                  self.rx[j]/= self.L
                  self.ry[j]/= self.L
@@ -598,7 +608,7 @@ class LJ :
                  self.rx[j] = xi + a*nx + rrx[j] 
                  self.ry[j] = yi + a*ny + rry[j] + 0.5*a            
                  self.rz[j] = zi + a*nz + rrz[j] + 0.5*a
-                 print( "  %d   %8.3f   %8.3f    %8.3f " % (j, self.rx[j], self.ry[j], self.rz[j]) )
+                 #print( "  %d   %8.3f   %8.3f    %8.3f " % (j, self.rx[j], self.ry[j], self.rz[j]) )
                  # reduced box coordinates in [-0.5:0.5]^3
                  self.rx[j]/= self.L
                  self.rx[j]-= rint(self.rx[j])
