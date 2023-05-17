@@ -534,10 +534,11 @@ class LJ :
       dy = zeros(N)
       dz = zeros(N)
       #ar = empty(N,(str_,2))
-      sig=3.4 # in Angstroem for argon   
+      sig=3.4 # in Angstroem for argon  
+      Lx=sig*self.L
       rout=open('trajectory.xyz','a')
       rout.write('  %d \n' % N )
-      rout.write('\n')
+      rout.write( ' %12.5g   %12.5g   %12.5g\n' % (Lx, Lx, Lx) )
       for i in range(N):
           #ar[i] = "Ar"
           dx[i] = sig*self.rx[i]*self.L
