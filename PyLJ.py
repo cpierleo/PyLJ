@@ -404,6 +404,7 @@ class LJ :
            self.calcgdr( N )
            print(" %8d %9.4f %9.4f  %6.2f " % (self.t, enep/N, virp/N, acc*100./(self.t*N)) )
            out_data.write(" %8d %9.4f %9.4f  %6.2f \n" % (self.t, enep/N, virp/N, acc*100./(self.t*N)) )
+           self.writexyz( N )
            tt += 1
         # end of mc run   
     # final configuration

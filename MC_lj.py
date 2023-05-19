@@ -55,6 +55,7 @@ def mclj(nstep=1000, rho=0.5, m=5, kt=1.1876, delta=0.25, freq=10, mode=0):
     mc.write_gdr( N, tt, rho, gdr_out )
 #   end of md - visualization of G(r)
     from matplotlib.pyplot import plot, show
+    %matplotlib widget
     from numpy import loadtxt,ones,size
     r,gdr = loadtxt(gdr_out, unpack=True, skiprows=1 )
     plot(r,gdr,'b.',r,ones(size(r)),'k-')
