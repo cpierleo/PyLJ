@@ -16,7 +16,12 @@ def mclj(nstep=1000, rho=0.5, m=5, kt=1.1876, delta=0.25, freq=10, mode=0):
    - vcmx, vcmy  center of mass momentum (constant of motion)
     """
     from numpy import random, sqrt, sum
+    from matplotlib.pyplot import plot, show
+    from numpy import loadtxt,ones,size
     from PyLJ import LJ
+    #%matplotlib widget
+
+
 #
     a=(4/rho)**(1./3.)
     Lref=a*m
@@ -54,9 +59,6 @@ def mclj(nstep=1000, rho=0.5, m=5, kt=1.1876, delta=0.25, freq=10, mode=0):
 # gdr final printout - use actual value of density rho 
     mc.write_gdr( N, tt, rho, gdr_out )
 #   end of md - visualization of G(r)
-    from matplotlib.pyplot import plot, show
-    %matplotlib widget
-    from numpy import loadtxt,ones,size
     r,gdr = loadtxt(gdr_out, unpack=True, skiprows=1 )
     plot(r,gdr,'b.',r,ones(size(r)),'k-')
     show()
