@@ -63,6 +63,7 @@ def mdlj(nstep=1000, rho=.8, m=6, kt=.684, kt_init=.684, dt=0.005, freq=1, mode=
         md.py *= md.L
         md.pz *= md.L
     #intial call for temperature difference
+
     md.itemp = sum( md.px*md.px + md.py*md.py + md.pz*md.pz )/(g*md.mass*md.L**2)
     print(" initial momenta sampled from maxwellian at temperature %8.4f " % kt)
     print( "# starting with box side at initial time L(t=0) = %8.4f " % md.L )
